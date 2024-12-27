@@ -1,0 +1,82 @@
+test_name: "Login and Checkout Test"
+steps:
+  - action: "open"
+    url: "{{base_url}}"
+  
+  - action: "type"
+    selector: "#user-name"
+    value: "{{credentials.username}}"
+  
+  - action: "type"
+    selector: "#password"
+    value: "{{credentials.password}}"
+  
+  - action: "click"
+    selector: "#login-button"
+
+  # Tambahkan wait untuk memastikan halaman telah dimuat dengan baik setelah login
+  - action: "wait"
+    selector: ".inventory_list"  # Tunggu elemen yang menandakan halaman telah berhasil dimuat
+  
+  - action: "verify"
+    selector: ".inventory_list"
+    condition: "visible"
+
+  # Menambahkan produk ke keranjang
+  - action: "click"
+    selector: ".inventory_item:nth-child(1) .btn_inventory"  # Klik tombol "Add to cart" pada produk pertama
+  
+  - action: "wait"
+    selector: ".shopping_cart_link"  # Tunggu ikon keranjang belanja muncul
+
+  # Navigasi ke halaman keranjang
+  - action: "click"
+    selector: ".shopping_cart_link"
+  
+  - action: "wait"
+    selector: ".cart_list"  # Tunggu halaman keranjang belanja muncul
+  
+  - action: "verify"
+    selector: ".cart_list"
+    condition: "visible"
+
+  # Melanjutkan ke halaman checkout
+  - action: "click"
+    selector: ".checkout_button"  # Klik tombol checkout
+  
+  - action: "wait"
+    selector: ".checkout_info"  # Tunggu halaman informasi checkout muncul
+  
+  - action: "verify"
+    selector: ".checkout_info"
+    condition: "visible"
+
+  # Melakukan checkout
+  - action: "type"
+    selector: "#first-name"
+    value: "John"
+  
+  - action: "type"
+    selector: "#last-name"
+    value: "Doe"
+  
+  - action: "type"
+    selector: "#postal-code"
+    value: "12345"
+  
+  - action: "click"
+    selector: "#continue"  # Klik tombol "Continue"
+  
+  - action: "wait"
+    selector: "#checkout_summary_container"  # Tunggu halaman overview muncul
+  
+  # Menyelesaikan pembayaran (selesai checkout)
+  - action: "click"
+    selector: "#finish"  # Klik tombol "Finish"
+  
+  - action: "wait"
+    selector: ".complete-header"  # Tunggu elemen yang menunjukkan checkout selesai
+  
+  - action: "verify"
+    selector: ".complete-header"
+    condition: "visible"
