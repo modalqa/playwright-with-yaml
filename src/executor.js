@@ -97,8 +97,9 @@ async function runTest(testCase, config) {
     console.log(`Executing step: ${step.action}`);
     switch (step.action) {
       case 'open':
-        await page.goto(step.url, { timeout: config.timeout });
+        await page.goto(step.url, { timeout: config.timeout || 30000 });
         break;
+
       case 'type':
         await page.fill(step.selector, step.value);
         await page.waitForTimeout(config.timeout);  // Menggunakan timeout dari konfigurasi

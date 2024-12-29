@@ -1,6 +1,6 @@
 # config/test-config.yaml
 base_url: "https://www.saucedemo.com"
-timeout: 1000
 credentials:
   username: "standard_user"
   password: "secret_sauce"
+timeout: 2000

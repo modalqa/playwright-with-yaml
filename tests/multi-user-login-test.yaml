@@ -1,0 +1,42 @@
+test_name: "Multi User Login Test"
+users:
+  - username: "standard_user"
+    expected: "success"
+  - username: "locked_out_user"
+    expected: "fail"
+  - username: "problem_user"
+    expected: "success"
+  - username: "performance_glitch_user"
+    expected: "success"
+  - username: "error_user"
+    expected: "fail"
+  - username: "visual_user"
+    expected: "success"
+steps:
+  - action: "open"
+    url: "{{base_url}}"
+  
+  - action: "type"
+    selector: "#user-name"
+    value: "{{user.username}}"
+  
+  - action: "type"
+    selector: "#password"
+    value: "{{credentials.password}}"
+  
+  - action: "click"
+    selector: "#login-button"
+  
+  # Verifikasi login berhasil atau gagal
+  - action: "conditional_verify"
+    condition: "{{user.expected}}"
+    success_steps:
+      - action: "wait"
+        selector: ".inventory_list"
+      - action: "verify"
+        selector: ".inventory_list"
+        condition: "visible"
+    fail_steps:
+      - action: "verify"
+        selector: ".error-message-container"
+        condition: "visible"
