@@ -1,14 +1,21 @@
 {
-  "name": "yaml-test",
+  "name": "playwright-with-yaml",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Run Playwright tests using YAML configuration files.",
+  "main": "src/runner.js", 
+  "bin": {
+    "playwright-yaml": "./src/runner.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/modalqa/playwright-with-yaml"
+  },
   "scripts": {
     "test": "node src/runner.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["playwright", "yaml", "testing"],
+  "author": "Faris Kurnia",
+  "license": "MIT",
   "dependencies": {
     "js-yaml": "^4.1.0",
     "playwright": "^1.49.1"
