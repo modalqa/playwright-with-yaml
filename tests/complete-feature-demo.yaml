@@ -1,0 +1,241 @@
+test_name: "Complete Feature Demo Test"
+description: "Demonstrates all available actions in the framework"
+browser: "chromium"
+headless: false
+viewport:
+  width: 1280
+  height: 720
+tracing: true
+screenshot: true
+
+variables:
+  testName: "Feature Demo"
+  expectedTitle: "Swag Labs"
+
+steps:
+  # === Navigation Actions ===
+  - action: "open"
+    url: "{{base_url}}"
+    waitUntil: "domcontentloaded"
+
+  - action: "verify_title"
+    equals: "{{expectedTitle}}"
+
+  - action: "verify_url"
+    contains: "saucedemo"
+
+  # === Input Actions ===
+  - action: "type"
+    selector: "#user-name"
+    value: "{{credentials.username}}"
+
+  - action: "type"
+    selector: "#password"
+    value: "{{credentials.password}}"
+
+  - action: "press"
+    selector: "#password"
+    key: "Enter"
+
+  # === Wait Actions ===
+  - action: "wait_for_element"
+    selector: ".inventory_list"
+    state: "visible"
+    timeout: 10000
+
+  # === Verification Actions ===
+  - action: "verify"
+    selector: ".inventory_list"
+    condition: "visible"
+
+  - action: "verify"
+    selector: ".inventory_item"
+    condition: "count"
+    expectedCount: 6
+
+  - action: "verify_text"
+    selector: ".title"
+    contains: "Products"
+
+  # === Mouse Actions ===
+  - action: "hover"
+    selector: ".inventory_item:nth-child(1)"
+
+  - action: "click"
+    selector: ".inventory_item:nth-child(1) .btn_inventory"
+
+  - action: "verify"
+    selector: ".shopping_cart_badge"
+    condition: "visible"
+
+  # === Screenshot Action ===
+  - action: "screenshot"
+    path: "./screenshots/cart-with-item.png"
+    fullPage: false
+
+  # === Navigation - Go Back/Forward ===
+  - action: "go_back"
+  
+  - action: "wait_for_element"
+    selector: ".inventory_list"
+    state: "visible"
+
+  # === Conditional Verification ===
+  - action: "conditional_verify"
+    condition: "success"
+    success_steps:
+      - action: "log"
+        message: "Test is proceeding successfully"
+    fail_steps:
+      - action: "log"
+        message: "Handling failure scenario"
+
+  # === JavaScript Execution ===
+  - action: "evaluate"
+    script: "() => document.querySelectorAll('.inventory_item').length"
+    variable: "itemCount"
+
+  - action: "console_log"
+    message: "Number of inventory items: {{itemCount}}"
+
+  # === Attribute Verification ===
+  - action: "verify"
+    selector: "#add-to-cart-sauce-labs-backpack"
+    condition: "attribute"
+    attribute: "class"
+    contains: "btn"
+
+  # === CSS Class Verification ===
+  - action: "verify"
+    selector: ".inventory_item:first-child"
+    condition: "css_class"
+    class: "inventory_item"
+
+  # === Check/Uncheck (if applicable) ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/checkboxes"
+  
+  - action: "check"
+    selector: "input[type='checkbox']:nth-child(1)"
+  
+  - action: "verify"
+    selector: "input[type='checkbox']:nth-child(1)"
+    condition: "checked"
+
+  - action: "uncheck"
+    selector: "input[type='checkbox']:nth-child(1)"
+
+  # === Select Dropdown ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/dropdown"
+  
+  - action: "select"
+    selector: "#dropdown"
+    value: "1"
+
+  # === Dialog Handling ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/javascript_alerts"
+  
+  - action: "accept_dialog"
+    selector: "[onclick='jsAlert()']"
+
+  # === Scroll Action ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/large"
+  
+  - action: "scroll"
+    selector: "h3"
+
+  # === Double Click ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/double_click"
+  
+  - action: "dblclick"
+    selector: div
+
+  # === Right Click ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/context_menu"
+  
+  - action: "right_click"
+    selector: "#hot-spot"
+
+  # === Frame Handling ===
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/iframe"
+  
+  - action: "switch_to_frame"
+    selector: "#mce_0_ifr"
+  
+  - action: "clear"
+    selector: "#tinymce"
+  
+  - action: "type"
+    selector: "#tinymce"
+    value: "Text inside iframe"
+  
+  - action: "switch_to_main"
+
+  # === Cookie Management ===
+  - action: "set_cookie"
+    name: "test_cookie"
+    value: "cookie_value"
+    domain: ".the-internet.herokuapp.com"
+    path: "/"
+  
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/cookies"
+  
+  - action: "verify"
+    selector: "#content"
+    condition: "visible"
+
+  # === Viewport Change ===
+  - action: "set_viewport"
+    width: 375
+    height: 667
+  
+  - action: "screenshot"
+    path: "./screenshots/mobile-view.png"
+  
+  - action: "set_viewport"
+    width: 1280
+    height: 720
+
+  # === Network Mocking ===
+  - action: "mock"
+    urlPattern: "**/api/status"
+    status: 200
+    contentType: "application/json"
+    body:
+      status: "online"
+      users: 100
+
+  # === Geolocation ===
+  - action: "grant_permission"
+    permission: "geolocation"
+  
+  - action: "set_geolocation"
+    latitude: 40.7128
+    longitude: -74.0060
+
+  # === Error Handling Demo ===
+  - action: "click"
+    selector: ".non-existent-element"
+    onError: "continue"
+    timeout: 1000
+
+  - action: "log"
+    message: "Continuing after handled error"
+
+  # === Final Verification ===
+  - action: "open"
+    url: "{{base_url}}"
+  
+  - action: "verify"
+    selector: ".login_container"
+    condition: "visible"
+
+  - action: "console_log"
+    message: "All feature demonstrations completed!"

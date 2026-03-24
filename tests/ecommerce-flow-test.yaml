@@ -1,0 +1,198 @@
+test_name: "E-Commerce Complete Flow Test"
+description: "Complete e-commerce shopping flow with advanced features"
+browser: "chromium"
+headless: false
+viewport:
+  width: 1920
+  height: 1080
+tracing: true
+
+variables:
+  firstName: "John"
+  lastName: "Doe"
+  postalCode: "12345"
+
+steps:
+  # === Login ===
+  - action: "open"
+    url: "{{base_url}}"
+  
+  - action: "type"
+    selector: "#user-name"
+    value: "{{credentials.username}}"
+  
+  - action: "type"
+    selector: "#password"
+    value: "{{credentials.password}}"
+  
+  - action: "click"
+    selector: "#login-button"
+  
+  - action: "wait_for_element"
+    selector: ".inventory_list"
+    state: "visible"
+  
+  - action: "verify"
+    selector: ".inventory_list"
+    condition: "visible"
+
+  # === Add Multiple Items to Cart ===
+  - action: "click"
+    selector: "#add-to-cart-sauce-labs-backpack"
+  
+  - action: "click"
+    selector: "#add-to-cart-sauce-labs-bike-light"
+  
+  - action: "click"
+    selector: "#add-to-cart-sauce-labs-bolt-t-shirt"
+  
+  - action: "verify"
+    selector: ".shopping_cart_badge"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: ".shopping_cart_badge"
+    equals: "3"
+
+  # === Navigate to Cart ===
+  - action: "click"
+    selector: ".shopping_cart_link"
+  
+  - action: "wait_for_element"
+    selector: ".cart_list"
+    state: "visible"
+  
+  - action: "verify"
+    selector: ".cart_list"
+    condition: "visible"
+  
+  - action: "verify"
+    selector: ".cart_item"
+    condition: "count"
+    expectedCount: 3
+
+  # === Remove One Item ===
+  - action: "click"
+    selector: "#remove-sauce-labs-bolt-t-shirt"
+  
+  - action: "verify"
+    selector: ".cart_item"
+    condition: "count"
+    expectedCount: 2
+  
+  - action: "screenshot"
+    path: "./screenshots/cart-items.png"
+
+  # === Checkout Process ===
+  - action: "click"
+    selector: ".checkout_button"
+  
+  - action: "wait_for_element"
+    selector: ".checkout_info_wrapper"
+    state: "visible"
+  
+  # === Fill Checkout Form ===
+  - action: "type"
+    selector: "#first-name"
+    value: "{{firstName}}"
+  
+  - action: "type"
+    selector: "#last-name"
+    value: "{{lastName}}"
+  
+  - action: "type"
+    selector: "#postal-code"
+    value: "{{postalCode}}"
+  
+  - action: "click"
+    selector: "#continue"
+  
+  - action: "wait_for_element"
+    selector: ".checkout_summary_container"
+    state: "visible"
+
+  # === Verify Order Summary ===
+  - action: "verify"
+    selector: ".summary_subtotal_label"
+    condition: "visible"
+  
+  - action: "verify"
+    selector: ".summary_tax_label"
+    condition: "visible"
+  
+  - action: "verify"
+    selector: ".summary_total_label"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: ".summary_subtotal_label"
+    contains: "Item total:"
+  
+  - action: "verify_text"
+    selector: ".summary_tax_label"
+    contains: "Tax:"
+  
+  - action: "verify_text"
+    selector: ".summary_total_label"
+    contains: "Total:"
+
+  # === Complete Purchase ===
+  - action: "click"
+    selector: "#finish"
+  
+  - action: "wait_for_element"
+    selector: ".complete-header"
+    state: "visible"
+  
+  - action: "verify"
+    selector: ".complete-header"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: ".complete-header"
+    equals: "Thank you for your order!"
+
+  # === Screenshot of Completion ===
+  - action: "screenshot"
+    path: "./screenshots/order-complete.png"
+    fullPage: true
+
+  # === Return to Shopping ===
+  - action: "click"
+    selector: "#back-to-products"
+  
+  - action: "wait_for_element"
+    selector: ".inventory_list"
+    state: "visible"
+  
+  - action: "verify_url"
+    contains: "inventory.html"
+
+  # === Logout ===
+  - action: "click"
+    selector: ".bm-burger-button"
+  
+  - action: "wait"
+    duration: 1000
+  
+  - action: "wait_for_element"
+    selector: "#logout_sidebar_link"
+    state: "visible"
+  
+  - action: "click"
+    selector: "#logout_sidebar_link"
+  
+  - action: "wait_for_element"
+    selector: "#user-name"  # Wait for login form to appear
+    state: "visible"
+  
+  - action: "verify"
+    selector: "#login-button"
+    condition: "visible"
+  
+  - action: "verify_url"
+    equals: "https://www.saucedemo.com/"
+
+  # === Final Log ===
+  - action: "console_log"
+    message: "E-commerce flow completed successfully!"

@@ -1,0 +1,295 @@
+# Advanced Configuration Examples for Playwright YAML Framework
+# This file demonstrates all available configuration options
+
+# === Basic Test Configuration ===
+test_name: "Advanced Configuration Example"
+description: "Demonstrates all configuration options available"
+
+# Browser Configuration
+browser: "chromium"  # Options: chromium, firefox, webkit
+headless: false      # Set to true for headless mode
+
+# Viewport Configuration
+viewport:
+  width: 1920
+  height: 1080
+
+# Device Emulation (optional - overrides viewport if specified)
+# device: "iPhone 13"  # Predefined device from Playwright devices
+# device: "Pixel 5"
+# device: "iPad Pro"
+
+# User Agent Configuration
+userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+
+# Locale and Timezone
+locale: "en-US"
+timezone: "America/New_York"
+
+# Security Settings
+ignoreHTTPSErrors: true
+
+# Performance Settings
+slowMo: 100  # Slow down actions by milliseconds (useful for debugging)
+
+# Tracing Configuration (for debugging in Playwright Trace Viewer)
+tracing: true
+
+# Screenshot Configuration
+screenshot: true
+fullPageScreenshot: false
+
+# Custom Variables for this test
+variables:
+  testData:
+    username: "test_user"
+    email: "test@example.com"
+    productName: "Premium Widget"
+  selectors:
+    loginButton: "#login-btn"
+    submitButton: "[type='submit']"
+
+# Steps Definition
+steps:
+  # Navigation with custom wait strategy
+  - action: "open"
+    url: "{{base_url}}"
+    waitUntil: "networkidle"  # Options: load, domcontentloaded, networkidle, commit
+    timeout: 30000
+
+  # Input with custom timeout
+  - action: "type"
+    selector: "#username"
+    value: "{{testData.username}}"
+    timeout: 5000
+
+  # Click with specific button and modifiers
+  - action: "click"
+    selector: "{{testData.selectors.loginButton}}"
+    button: "left"  # Options: left, right, middle
+    clickCount: 1
+    modifiers: []   # Options: Shift, Control, Alt, Meta
+
+  # Wait with specific state
+  - action: "wait_for_element"
+    selector: ".dashboard"
+    state: "visible"  # Options: visible, hidden, attached, detached
+    timeout: 10000
+
+  # Verification with error handling
+  - action: "verify"
+    selector: ".welcome-message"
+    condition: "visible"
+    onError: "continue"  # Continue even if verification fails
+
+  # Screenshot at specific point
+  - action: "screenshot"
+    path: "./screenshots/dashboard-view.png"
+    fullPage: true
+
+  # JavaScript execution with variable storage
+  - action: "evaluate"
+    script: |
+      () => {
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user).name : 'Guest';
+      }
+    variable: "userName"
+
+  # Log the extracted value
+  - action: "console_log"
+    message: "Logged in user: {{userName}}"
+
+  # Network mocking example
+  - action: "mock"
+    urlPattern: "**/api/data"
+    status: 200
+    contentType: "application/json"
+    body:
+      success: true
+      data:
+        id: 1
+        value: "mocked"
+
+  # File upload example
+  - action: "upload"
+    selector: "#file-input"
+    files:
+      - "./test-files/sample.pdf"
+      - "./test-files/image.png"
+
+  # Download handling
+  - action: "download"
+    selector: "#download-link"
+    savePath: "./downloads/file-{{Date.now()}}.pdf"
+
+  # Cookie management
+  - action: "set_cookie"
+    name: "session_token"
+    value: "abc123xyz"
+    domain: ".example.com"
+    path: "/"
+    expires: 1735689600  # Unix timestamp
+    httpOnly: true
+    secure: true
+    sameSite: "Strict"  # Options: Strict, Lax, None
+
+  # Geolocation testing
+  - action: "grant_permission"
+    permission: "geolocation"
+    origin: "https://example.com"
+  
+  - action: "set_geolocation"
+    latitude: 40.7128
+    longitude: -74.0060
+
+  # Viewport change for responsive testing
+  - action: "set_viewport"
+    width: 375
+    height: 667
+  
+  - action: "screenshot"
+    path: "./screenshots/mobile-view.png"
+  
+  - action: "set_viewport"
+    width: 1280
+    height: 720
+
+  # Frame handling
+  - action: "switch_to_frame"
+    selector: "#iframe-container"
+  
+  - action: "click"
+    selector: "#inside-frame-button"
+  
+  - action: "switch_to_main"
+
+  # Multi-tab operations
+  - action: "new_tab"
+    url: "https://example.com/new-page"
+  
+  - action: "switch_to_tab"
+    index: 0
+  
+  - action: "close_tab"
+
+  # Dialog handling
+  - action: "accept_dialog"
+    selector: "#trigger-confirm"
+
+  # Storage state management
+  - action: "save_storage"
+    path: "./storage/state-{{Date.now()}}.json"
+
+  # Cleanup cookies
+  - action: "clear_cookies"
+
+  # Final verification
+  - action: "verify_title"
+    equals: "Dashboard - Example App"
+  
+  - action: "verify_url"
+    contains: "/dashboard"
+  
+  - action: "console_log"
+    message: "Test completed successfully!"
+
+---
+# === Multiple User Testing Pattern ===
+# Example of testing with multiple user types
+
+test_name: "Multi-User Login Scenarios"
+users:
+  - username: "standard_user"
+    password: "secret_sauce"
+    expected: "success"
+    description: "Standard user can login and browse"
+  
+  - username: "locked_out_user"
+    password: "secret_sauce"
+    expected: "fail"
+    description: "Locked out user should see error"
+  
+  - username: "problem_user"
+    password: "secret_sauce"
+    expected: "success"
+    description: "Problem user has special behavior"
+  
+  - username: "performance_glitch_user"
+    password: "secret_sauce"
+    expected: "success"
+    description: "Experiences performance issues"
+
+steps:
+  - action: "open"
+    url: "{{base_url}}"
+  
+  - action: "type"
+    selector: "#user-name"
+    value: "{{user.username}}"
+  
+  - action: "type"
+    selector: "#password"
+    value: "{{user.password}}"
+  
+  - action: "click"
+    selector: "#login-button"
+  
+  - action: "conditional_verify"
+    condition: "{{user.expected}}"
+    success_steps:
+      - action: "verify"
+        selector: ".inventory_list"
+        condition: "visible"
+      - action: "console_log"
+        message: "Login successful for {{user.username}}"
+    fail_steps:
+      - action: "verify"
+        selector: ".error-message-container"
+        condition: "visible"
+      - action: "console_log"
+        message: "Login failed as expected for {{user.username}}"
+
+---
+# === Performance Testing Pattern ===
+
+test_name: "Performance Monitoring Test"
+description: "Monitor page load times and performance metrics"
+tracing: true
+
+steps:
+  # Record load time
+  - action: "evaluate"
+    script: "() => performance.now()"
+    variable: "startTime"
+  
+  - action: "open"
+    url: "{{base_url}}"
+    waitUntil: "load"
+  
+  - action: "evaluate"
+    script: "() => performance.now()"
+    variable: "endTime"
+  
+  - action: "evaluate"
+    script: |
+      (start, end) => {
+        return {
+          loadTime: end - start,
+          domContentLoaded: performance.getEntriesByType('navigation')[0].domContentLoadedEventEnd,
+          fullyLoaded: performance.getEntriesByType('navigation')[0].loadEventEnd
+        };
+      }
+    variable: "performanceMetrics"
+  
+  - action: "console_log"
+    message: "Load time: {{performanceMetrics.loadTime}}ms"
+  
+  - action: "verify"
+    selector: ".inventory_list"
+    condition: "visible"
+  
+  # Verify load time is acceptable (< 3 seconds)
+  - action: "evaluate"
+    script: "(metrics) => metrics.loadTime < 3000"
+    variable: "isFastEnough"

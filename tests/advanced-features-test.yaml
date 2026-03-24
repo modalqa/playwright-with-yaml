@@ -1,0 +1,288 @@
+test_name: "Advanced Features Test - API Mocking, Multi-tab, and File Operations"
+description: "Demonstrates advanced Playwright features"
+browser: "chromium"
+headless: false
+tracing: true
+
+steps:
+  # === API Mocking ===
+  - action: "log"
+    message: "Starting API Mocking Test"
+
+  - action: "mock"
+    urlPattern: "**/api/user/*"
+    status: 200
+    contentType: "application/json"
+    body:
+      id: 123
+      name: "Mocked User"
+      email: "mocked@example.com"
+      role: "admin"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/"
+    timeout: 30000
+  
+  - action: "screenshot"
+    path: "./screenshots/mocked-api-test.png"
+
+  # === Multi-Tab Testing ===
+  - action: "log"
+    message: "Starting Multi-Tab Test"
+
+  - action: "open"
+    url: "https://example.com"
+  
+  - action: "verify_title"
+    equals: "Example Domain"
+  
+  - action: "new_tab"
+    url: "https://example.com/another-page"
+  
+  - action: "switch_to_tab"
+    index: 0
+  
+  - action: "verify_url"
+    contains: "example.com"
+  
+  - action: "switch_to_tab"
+    index: 1
+  
+  - action: "close_tab"
+  
+  - action: "switch_to_main"
+
+  # === Keyboard Actions ===
+  - action: "log"
+    message: "Testing Keyboard Actions"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/key_presses"
+  
+  - action: "press"
+    selector: "#target"
+    key: "Enter"
+  
+  - action: "wait_for_element"
+    selector: "#result"
+    state: "visible"
+  
+  - action: "verify_text"
+    selector: "#result"
+    contains: "You entered: Enter"
+
+  # === Drag and Drop ===
+  - action: "log"
+    message: "Testing Drag and Drop"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/drag_and_drop"
+  
+  - action: "drag"
+    source: "#column-a"
+    target: "#column-b"
+  
+  - action: "wait_for_element"
+    selector: "#column-b"
+    state: "visible"
+  
+  - action: "screenshot"
+    path: "./screenshots/drag-drop-result.png"
+
+  # === Dynamic Table Verification ===
+  - action: "log"
+    message: "Testing Table Verification"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/tables"
+  
+  - action: "verify"
+    selector: "table"
+    condition: "visible"
+  
+  - action: "verify"
+    selector: "table tr"
+    condition: "count"
+    expectedCount: 5
+  
+  - action: "verify_text"
+    selector: "table td:nth-child(1)"
+    contains: "Doe"
+
+  # === Tooltip Verification ===
+  - action: "log"
+    message: "Testing Tooltips"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/tooltips"
+  
+  - action: "hover"
+    selector: "[data-example='tooltip']"
+  
+  - action: "wait"
+    duration: 500
+  
+  - action: "screenshot"
+    path: "./screenshots/tooltip-display.png"
+
+  # === Progress Bar ===
+  - action: "log"
+    message: "Testing Progress Bar"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/progress_bar"
+  
+  - action: "click"
+    selector: "button"
+  
+  - action: "wait_for_element"
+    selector: "[role='progressbar']"
+    state: "visible"
+  
+  - action: "verify"
+    selector: "[role='progressbar']"
+    condition: "attribute"
+    attribute: "aria-valuenow"
+    contains: ""
+
+  # === Slider Control ===
+  - action: "log"
+    message: "Testing Slider"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/range_slider"
+  
+  - action: "verify"
+    selector: "input[type='range']"
+    condition: "visible"
+  
+  - action: "verify"
+    selector: "input[type='range']"
+    condition: "enabled"
+
+  # === Accordion/Collapse ===
+  - action: "log"
+    message: "Testing Expandable Elements"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/add_remove_elements/"
+  
+  - action: "click"
+    selector: "[onclick='addElement()']"
+  
+  - action: "wait_for_element"
+    selector: ".added-manually"
+    state: "visible"
+  
+  - action: "verify"
+    selector: ".added-manually"
+    condition: "count"
+    expectedCount: 1
+  
+  - action: "click"
+    selector: ".added-manually button"
+  
+  - action: "wait"
+    duration: 500
+  
+  - action: "verify"
+    selector: ".added-manually"
+    condition: "count"
+    expectedCount: 0
+
+  # === Hover Menu ===
+  - action: "log"
+    message: "Testing Hover Menu"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/hovers"
+  
+  - action: "hover"
+    selector: ".figure:nth-child(1)"
+  
+  - action: "wait_for_element"
+    selector: ".figure:nth-child(1) .figcaption"
+    state: "visible"
+  
+  - action: "verify"
+    selector: ".figure:nth-child(1) .figcaption"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: ".figure:nth-child(1) .figcaption h5"
+    contains: "name: user1"
+
+  # === Notification Messages ===
+  - action: "log"
+    message: "Testing Notifications"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/notification_message_rendered"
+  
+  - action: "click"
+    selector: "ul li:nth-child(1)"
+  
+  - action: "wait_for_element"
+    selector: "#flash"
+    state: "visible"
+  
+  - action: "verify"
+    selector: "#flash"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: "#flash"
+    contains: "Action Successful"
+
+  # === Redirect Testing ===
+  - action: "log"
+    message: "Testing Redirects"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/redirector"
+  
+  - action: "wait_for_navigation"
+    waitUntil: "load"
+  
+  - action: "verify_url"
+    contains: "redirect"
+
+  # === Secure Area Login ===
+  - action: "log"
+    message: "Testing Secure Login"
+
+  - action: "open"
+    url: "https://the-internet.herokuapp.com/login"
+  
+  - action: "type"
+    selector: "#username"
+    value: "tomsmith"
+  
+  - action: "type"
+    selector: "#password"
+    value: "SuperSecretPassword!"
+  
+  - action: "click"
+    selector: "button[type='submit']"
+  
+  - action: "wait_for_element"
+    selector: "#flash"
+    state: "visible"
+  
+  - action: "verify"
+    selector: "#flash"
+    condition: "visible"
+  
+  - action: "verify_text"
+    selector: "#flash"
+    contains: "You logged into a secure area!"
+  
+  - action: "screenshot"
+    path: "./screenshots/secure-area-login.png"
+
+  # === Final Summary ===
+  - action: "log"
+    message: "All advanced feature tests completed successfully!"
+  
+  - action: "console_log"
+    message: "Test execution finished. Check screenshots and traces for details."

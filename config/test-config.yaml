@@ -3,4 +3,4 @@ base_url: "https://www.saucedemo.com"
 credentials:
   username: "standard_user"
   password: "secret_sauce"
-timeout: 2000
+timeout: 30000  # Increased default timeout for better reliability

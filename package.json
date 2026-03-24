@@ -2,7 +2,7 @@
   "name": "playwright-with-yaml",
   "version": "1.0.1",
   "description": "Run Playwright tests using YAML configuration files.",
-  "main": "src/runner.js", 
+  "main": "src/runner.js",
   "bin": {
     "playwright-yaml": "./src/runner.js"
   },
@@ -13,7 +13,11 @@
   "scripts": {
     "test": "node src/runner.js"
   },
-  "keywords": ["playwright", "yaml", "testing"],
+  "keywords": [
+    "playwright",
+    "yaml",
+    "testing"
+  ],
   "author": "Faris Kurnia",
   "license": "MIT",
   "dependencies": {
