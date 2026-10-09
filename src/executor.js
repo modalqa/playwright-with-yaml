@@ -204,6 +204,17 @@ async function executeAction(page, step, config, context, browser) {
         await page.fill(step.selector, step.value, { timeout });
         break;
 
+      // Monaco editor: fill() não funciona (editor custom). Clica, limpa, digita com
+      // delay (evita embaralhar) e fecha o autocomplete com Escape.
+      case 'monaco':
+        await page.click(step.selector || '.monaco-editor', { timeout });
+        await page.keyboard.press('Control+A');
+        await page.keyboard.press('Delete');
+        await page.waitForTimeout(200);
+        await page.keyboard.type(step.value, { delay: step.delay || 25 });
+        await page.keyboard.press('Escape');
+        break;
+
       case 'press':
       case 'keypress':
         await page.press(step.selector, step.key || step.value, { timeout });
@@ -218,7 +229,12 @@ async function executeAction(page, step, config, context, browser) {
         break;
 
       case 'select':
-        await page.selectOption(step.selector, step.value, { timeout });
+        // aceita selecionar por value (step.value) OU por texto visível (step.label).
+        if (step.label) {
+          await page.selectOption(step.selector, { label: step.label }, { timeout });
+        } else {
+          await page.selectOption(step.selector, step.value, { timeout });
+        }
         break;
 
       // Mouse Actions
